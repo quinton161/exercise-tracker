@@ -6,7 +6,11 @@ const Exercise = require('../models/Exercise');
 // Create a new user
 router.post('/', async (req, res) => {
   try {
-    const { username } = req.body;
+    const username = req.body.username;
+    if (!username) {
+      return res.status(400).json({ error: 'username is required' });
+    }
+
     const user = new User({ username });
     await user.save();
     res.json({ username: user.username, _id: user._id });
@@ -30,6 +34,10 @@ router.post('/:id/exercises', async (req, res) => {
   try {
     const { description, duration, date } = req.body;
     const userId = req.params.id;
+
+    if (!description || !duration) {
+      return res.status(400).json({ error: 'description and duration are required' });
+    }
 
     const user = await User.findById(userId);
     if (!user) {
