@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exercise Tracker</title>
+    <title>Exercise tracker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,6 +13,11 @@
         }
         h1 {
             text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 15px;
         }
         form {
             margin-bottom: 20px;
@@ -24,7 +29,9 @@
             display: block;
             width: 100%;
             margin-bottom: 10px;
-            padding: 5px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         button {
             background-color: #4CAF50;
@@ -33,6 +40,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
         button:hover {
             background-color: #45a049;
@@ -43,19 +51,31 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-    <h1>Exercise Tracker</h1>
+    <h1>Exercise tracker</h1>
     
     <form id="create-user-form">
         <h2>Create a New User</h2>
@@ -95,7 +115,10 @@
                     body: JSON.stringify({ username })
                 });
                 const data = await response.json();
-                alert(`User created! ID: ${data._id}`);
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'response';
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('create-user-form').appendChild(resultDiv);
             } catch (error) {
                 alert('Error creating user');
             }
@@ -116,7 +139,10 @@
                     body: JSON.stringify({ description, duration, date })
                 });
                 const data = await response.json();
-                alert('Exercise added successfully!');
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'response';
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('add-exercise-form').appendChild(resultDiv);
             } catch (error) {
                 alert('Error adding exercise');
             }
@@ -149,26 +175,28 @@
         function displayLog(data) {
             const logResult = document.getElementById('log-result');
             logResult.innerHTML = `
-                <h3>Exercise Log for ${data.username}</h3>
-                <p>Total exercises: ${data.count}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Description</th>
-                            <th>Duration</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.log.map(exercise => `
+                <div class="response">
+                    <h3>Exercise Log for ${data.username}</h3>
+                    <p>Total exercises: ${data.count}</p>
+                    <table>
+                        <thead>
                             <tr>
-                                <td>${exercise.description}</td>
-                                <td>${exercise.duration}</td>
-                                <td>${exercise.date}</td>
+                                <th>Description</th>
+                                <th>Duration</th>
+                                <th>Date</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            ${data.log.map(exercise => `
+                                <tr>
+                                    <td>${exercise.description}</td>
+                                    <td>${exercise.duration}</td>
+                                    <td>${exercise.date}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
             `;
         }
     </script>

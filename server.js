@@ -17,16 +17,22 @@ app.use(express.static('public'));
 app.use('/api/users', require('./routes/users'));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/exercise-tracker', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000 // Timeout after 5s instead of 30s
-})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => {
-  console.log('MongoDB Connection Error:', err);
-  // Don't exit the process, let the server continue running
-});
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/exercise-tracker', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000
+    });
+    console.log('MongoDB Connected');
+  } catch (err) {
+    console.log('MongoDB Connection Error:', err.message);
+    // Retry connection after 5 seconds
+    setTimeout(connectDB, 5000);
+  }
+};
+
+connectDB();
 
 // Serve static files
 app.get('/', (req, res) => {
