@@ -17,7 +17,7 @@ app.use(express.static('public'));
 app.use('/api/users', require('./routes/users'));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/exercise-tracker', {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/exercise-tracker', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000 // Timeout after 5s instead of 30s
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 }); 

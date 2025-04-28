@@ -1,7 +1,7 @@
 {
   "name": "exercise-tracker",
   "version": "1.0.0",
-  "description": "A full-stack exercise tracking application",
+  "description": "A full-stack JavaScript application that allows users to track their exercises",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
