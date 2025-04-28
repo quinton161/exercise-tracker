@@ -1,3 +1,38 @@
+# Node modules
 node_modules/
+
+# Environment variables
 .env
-.DS_Store 
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for coverage
+coverage
+
+# Dependency directories
+.npm
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# OS specific files
+.DS_Store
+Thumbs.db 

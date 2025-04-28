@@ -1,204 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exercise tracker</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2 {
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        form {
-            margin-bottom: 20px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        input {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #log-result {
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .response {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-    </style>
+    <title>Exercise Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <h1>Exercise tracker</h1>
-    
-    <form id="create-user-form">
-        <h2>Create a New User</h2>
-        <input type="text" id="username" placeholder="Username" required>
-        <button type="submit">Create User</button>
-    </form>
+    <div class="container">
+        <h1>Exercise Tracker</h1>
 
-    <form id="add-exercise-form">
-        <h2>Add Exercise</h2>
-        <input type="text" id="userId" placeholder="User ID" required>
-        <input type="text" id="description" placeholder="Description" required>
-        <input type="number" id="duration" placeholder="Duration (minutes)" required>
-        <input type="date" id="date">
-        <button type="submit">Add Exercise</button>
-    </form>
-
-    <form id="get-log-form">
-        <h2>Get Exercise Log</h2>
-        <input type="text" id="logUserId" placeholder="User ID" required>
-        <input type="date" id="from" placeholder="From (yyyy-mm-dd)">
-        <input type="date" id="to" placeholder="To (yyyy-mm-dd)">
-        <input type="number" id="limit" placeholder="Limit">
-        <button type="submit">Get Log</button>
-    </form>
-
-    <div id="log-result"></div>
-
-    <script>
-        // Create User
-        document.getElementById('create-user-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            try {
-                const response = await fetch('/api/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username })
-                });
-                const data = await response.json();
-                const resultDiv = document.createElement('div');
-                resultDiv.className = 'response';
-                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-                document.getElementById('create-user-form').appendChild(resultDiv);
-            } catch (error) {
-                alert('Error creating user');
-            }
-        });
-
-        // Add Exercise
-        document.getElementById('add-exercise-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('userId').value;
-            const description = document.getElementById('description').value;
-            const duration = document.getElementById('duration').value;
-            const date = document.getElementById('date').value;
-
-            try {
-                const response = await fetch(`/api/users/${userId}/exercises`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ description, duration, date })
-                });
-                const data = await response.json();
-                const resultDiv = document.createElement('div');
-                resultDiv.className = 'response';
-                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-                document.getElementById('add-exercise-form').appendChild(resultDiv);
-            } catch (error) {
-                alert('Error adding exercise');
-            }
-        });
-
-        // Get Exercise Log
-        document.getElementById('get-log-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('logUserId').value;
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            const limit = document.getElementById('limit').value;
-
-            let url = `/api/users/${userId}/logs`;
-            const params = new URLSearchParams();
-            if (from) params.append('from', from);
-            if (to) params.append('to', to);
-            if (limit) params.append('limit', limit);
-            if (params.toString()) url += `?${params.toString()}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                displayLog(data);
-            } catch (error) {
-                alert('Error fetching log');
-            }
-        });
-
-        function displayLog(data) {
-            const logResult = document.getElementById('log-result');
-            logResult.innerHTML = `
-                <div class="response">
-                    <h3>Exercise Log for ${data.username}</h3>
-                    <p>Total exercises: ${data.count}</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th>Duration</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.log.map(exercise => `
-                                <tr>
-                                    <td>${exercise.description}</td>
-                                    <td>${exercise.duration}</td>
-                                    <td>${exercise.date}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+        <div class="card">
+            <h2>Create a New User</h2>
+            <form id="new-user-form" action="/api/users" method="post">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
                 </div>
-            `;
-        }
-    </script>
+                <button type="submit">Create User</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Add Exercise</h2>
+            <form id="exercise-form">
+                <div class="form-group">
+                    <label for="userId">User ID:</label>
+                    <input type="text" id="userId" name="_id" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <input type="text" id="description" name="description" required>
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duration (mins):</label>
+                    <input type="number" id="duration" name="duration" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date (yyyy-mm-dd):</label>
+                    <input type="date" id="date" name="date">
+                </div>
+                <button type="submit">Add Exercise</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>User Logs</h2>
+            <form id="log-form" method="get">
+                <div class="form-group">
+                    <label for="logUserId">User ID:</label>
+                    <input type="text" id="logUserId" name="userId" required>
+                </div>
+                <div class="form-group">
+                    <label for="from">From (yyyy-mm-dd):</label>
+                    <input type="date" id="from" name="from">
+                </div>
+                <div class="form-group">
+                    <label for="to">To (yyyy-mm-dd):</label>
+                    <input type="date" id="to" name="to">
+                </div>
+                <div class="form-group">
+                    <label for="limit">Limit:</label>
+                    <input type="number" id="limit" name="limit" min="1">
+                </div>
+                <button type="submit">Get Logs</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>API Endpoints</h2>
+            <ul>
+                <li><strong>POST /api/users</strong> - Create a new user</li>
+                <li><strong>GET /api/users</strong> - Get a list of all users</li>
+                <li><strong>POST /api/users/:_id/exercises</strong> - Add an exercise</li>
+                <li><strong>GET /api/users/:_id/logs</strong> - Get user's exercise log</li>
+                <li><strong>GET /api/users/:_id/logs?from=&to=&limit=</strong> - Get filtered logs</li>
+            </ul>
+        </div>
+
+        <div id="result" class="card hidden">
+            <h2>Result</h2>
+            <pre id="result-json"></pre>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-</html> 
+
+</html>
